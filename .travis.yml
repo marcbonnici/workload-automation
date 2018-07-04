@@ -5,11 +5,12 @@ python:
     - "3.6"
 
 install:
+    - pip install louie-latest
     - pip install nose
     - pip install nose2
 
 script:
     - git clone -v https://github.com/ARM-software/devlib.git /tmp/devlib && cd /tmp/devlib && python setup.py install
-    - git clone -v https://github.com/marcbonnici/workload-automation -b travis /tmp/wa && cd /tmp/wa && git checkout $TRAVIS_COMMIT && python setup.py install
-    - nose2 tests
+    - pip install $TRAVIS_BUILD_DIR
+    - nose2 -s $TRAVIS_BUILD_DIR/tests
 
