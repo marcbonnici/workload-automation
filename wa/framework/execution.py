@@ -23,7 +23,7 @@ from copy import copy
 from datetime import datetime
 
 import wa.framework.signal as signal
-from wa.framework import instrument
+from wa.framework import instrument as instrumentation
 from wa.framework.configuration.core import Status
 from wa.framework.exception import TargetError, HostError, WorkloadError
 from wa.framework.exception import TargetNotRespondingError, TimeoutError  # pylint: disable=redefined-builtin
@@ -100,15 +100,13 @@ class ExecutionContext(object):
         self.tm = tm
         self.run_output = output
         self.run_state = output.state
-        self.logger.debug('Loading resource discoverers')
-        self.resolver = ResourceResolver(cm.plugin_cache)
-        self.resolver.load()
         self.job_queue = None
         self.completed_jobs = None
         self.current_job = None
         self.successful_jobs = 0
         self.failed_jobs = 0
         self.run_interrupted = False
+        self._load_resource_getters()
 
     def start_run(self):
         self.output.info.start_time = datetime.utcnow()
@@ -180,6 +178,9 @@ class ExecutionContext(object):
             self.skip_job(job)
         self.write_state()
 
+    def write_config(self):
+        self.run_output.write_config(self.cm.get_config())
+
     def write_state(self):
         self.run_output.write_state()
 
@@ -190,6 +191,9 @@ class ExecutionContext(object):
 
     def write_job_specs(self):
         self.run_output.write_job_specs(self.cm.job_specs)
+
+    def add_augmentation(self, aug):
+        self.cm.run_config.add_augmentation(aug)
 
     def get_resource(self, resource, strict=True):
         result = self.resolver.get(resource, strict)
@@ -294,6 +298,13 @@ class ExecutionContext(object):
                 new_queue.append(job)
 
         self.job_queue = new_queue
+
+    def _load_resource_getters(self):
+        self.logger.debug('Loading resource discoverers')
+        self.resolver = ResourceResolver(self.cm.plugin_cache)
+        self.resolver.load()
+        for getter in self.resolver.getters:
+            self.cm.run_config.add_resource_getter(getter)
 
     def _get_unique_filepath(self, filename):
         filepath = os.path.join(self.output_directory, filename)
@@ -405,15 +416,17 @@ class Executor(object):
         context.output.write_state()
 
         self.logger.info('Installing instruments')
-        for instrument_name in context.cm.get_instruments(self.target_manager.target):
-            instrument.install(instrument_name, context)
-        instrument.validate()
+        for instrument in context.cm.get_instruments(self.target_manager.target):
+            instrumentation.install(instrument, context)
+        instrumentation.validate()
 
         self.logger.info('Installing output processors')
         pm = ProcessorManager()
         for proc in context.cm.get_processors():
             pm.install(proc, context)
         pm.validate()
+
+        context.write_config()
 
         self.logger.info('Starting run')
         runner = Runner(context, pm)
