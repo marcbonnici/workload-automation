@@ -27,7 +27,6 @@ from wa.framework.plugin import Plugin, Parameter
 from wa.utils.misc import resolve_cpus, resolve_unique_domain_cpus
 from wa.utils.types import caseless_string, enum
 
-
 logger = logging.getLogger('RuntimeConfig')
 
 
@@ -231,7 +230,7 @@ class SysfileValuesRuntimeConfig(RuntimeConfig):
     def check_target(self):
         return True
 
-    def validate_parameters(self):
+    def validate_parameters(self):  # pylint: disable=useless-return
         return
 
     def commit(self):
@@ -731,7 +730,7 @@ class IdleStateValue(object):
         '''Checks passed state and converts to its ID'''
         value = caseless_string(value)
         for s_id, s_name, s_desc in self.values:
-            if value == s_id or value == s_name or value == s_desc:
+            if value in (s_id, s_name, s_desc):
                 return s_id
         msg = 'Invalid IdleState: "{}"; Must be in {}'
         raise ValueError(msg.format(value, self.values))
@@ -820,7 +819,7 @@ class CpuidleRuntimeConfig(RuntimeConfig):
         if not self.target.has('cpuidle'):
             raise TargetError('Target does not appear to support cpuidle')
 
-    def validate_parameters(self):
+    def validate_parameters(self):  # pylint: disable=useless-return
         return
 
     def clear(self):

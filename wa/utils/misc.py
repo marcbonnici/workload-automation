@@ -41,8 +41,8 @@ else:
 from itertools import chain, cycle
 from distutils.spawn import find_executable  # pylint: disable=no-name-in-module, import-error
 
-import yaml
 from dateutil import tz
+import yaml
 
 # pylint: disable=wrong-import-order
 from devlib.exception import TargetError
@@ -349,7 +349,7 @@ def load_struct_from_file(filepath):
 
     """
     extn = os.path.splitext(filepath)[1].lower()
-    if (extn == '.py') or (extn == '.pyc') or (extn == '.pyo'):
+    if extn in ['.py', '.pyc', '.pyo']:
         return load_struct_from_python(filepath)
     elif extn == '.yaml':
         return load_struct_from_yaml(filepath)

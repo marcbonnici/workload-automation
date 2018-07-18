@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
 import os
 from copy import copy, deepcopy
@@ -231,7 +232,7 @@ class ConfigurationPoint(object):
                             ConfigurationPoints.
         """
         self.name = identifier(name)
-        if kind in KIND_MAP:
+        if kind in KIND_MAP:  # pylint: disable=consider-using-get
             kind = KIND_MAP[kind]
         if kind is not None and not callable(kind):
             raise ValueError('Kind must be callable.')
@@ -965,7 +966,7 @@ class JobGenerator(object):
 
         self.job_spec_template = obj_dict(not_in_dict=['name'])
         self.job_spec_template.name = "globally specified job spec configuration"
-        self.job_spec_template.id = "global"
+        self.job_spec_template.id = "global"  # pylint: disable=C0103
         # Load defaults
         for cfg_point in JobSpec.configuration.values():
             cfg_point.set_value(self.job_spec_template, check_mandatory=False)

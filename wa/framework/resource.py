@@ -37,6 +37,7 @@ class __NullOwner(object):
     name = 'noone'
     dependencies_directory = settings.dependencies_directory
 
+    # pylint: disable=useless-return
     def __getattr__(self, name):
         return None
 
@@ -274,7 +275,7 @@ class ResourceResolver(object):
 
 def apk_version_matches(path, version):
     info = ApkInfo(path)
-    if info.version_name == version or info.version_code == version:
+    if version in (info.version_name, info.version_code):
         return True
     return loose_version_matching(version, info.version_name)
 

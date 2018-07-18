@@ -428,9 +428,9 @@ class toggle_set(set):
 
     def values(self):
         """
-        returns a list of enabled items.
+        returns a set of enabled items.
         """
-        return set([item for item in self if not item.startswith('~')])
+        return {item for item in self if not item.startswith('~')}
 
     def conflicts_with(self, other):
         """

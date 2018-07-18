@@ -78,6 +78,7 @@ def init(verbosity=logging.INFO, color=True, indent_with=4,
         _console_handler.setFormatter(formatter(regular_fmt))
     root_logger.addHandler(_console_handler)
 
+    # pylint: disable=invalid-envvar-default
     buffer_capacity = os.getenv('WA_LOG_BUFFER_CAPACITY',
                                 DEFAULT_INIT_BUFFER_CAPACITY)
     _init_handler = InitHandler(buffer_capacity)

@@ -22,7 +22,7 @@ import shutil
 from copy import copy
 from datetime import datetime
 
-import wa.framework.signal as signal
+from wa.framework import signal
 from wa.framework import instrument as instrumentation
 from wa.framework.configuration.core import Status
 from wa.framework.exception import TargetError, HostError, WorkloadError
@@ -445,7 +445,7 @@ class Executor(object):
         for status in reversed(Status.levels):
             if status in counter:
                 parts.append('{} {}'.format(counter[status], status))
-        self.logger.info(status_summary + ', '.join(parts))
+        self.logger.info(status_summary + ', '.join(parts))  # pylint: disable=logging-not-lazy
 
         self.logger.info('Results can be found in {}'.format(output.basepath))
 

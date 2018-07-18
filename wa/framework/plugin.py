@@ -157,6 +157,7 @@ class Alias(object):
                 raise ConfigError(msg.format(param, self.name, ext.name))
 
 
+# pylint: disable=bad-mcs-classmethod-argument
 class PluginMeta(type):
     """
     This basically adds some magic to plugins to make implementing new plugins,

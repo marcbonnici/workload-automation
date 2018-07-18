@@ -403,7 +403,7 @@ class ParallelStats(object):
 
         for i, clust in enumerate(clusters):
             self.clusters[str(i)] = set(clust)
-        self.clusters['all'] = set([cpu.id for cpu in cpus])
+        self.clusters['all'] = {cpu.id for cpu in cpus}
 
         self.first_timestamp = None
         self.last_timestamp = None

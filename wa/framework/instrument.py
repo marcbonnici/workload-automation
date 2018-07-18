@@ -269,7 +269,8 @@ class ManagedCallback(object):
                     logger.debug("Target unresponsive; skipping callback {}".format(self.callback))
                     return
                 self.callback(context)
-            except (KeyboardInterrupt, TargetNotRespondingError, TimeoutError):  # pylint: disable=W0703
+            # pylint: disable=W0703,try-except-raise
+            except (KeyboardInterrupt, TargetNotRespondingError, TimeoutError):
                 raise
             except Exception as e:  # pylint: disable=W0703
                 logger.error('Error in instrument {}'.format(self.instrument.name))
