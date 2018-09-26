@@ -107,7 +107,7 @@ class ConfigManager(object):
         instruments = []
         for name in self.enabled_instruments:
             try:
-                instruments.append(self.get_plugin(name, kind='instrument',
+                instruments.append(self.get_plugin(identifier(name), kind='instrument',
                                                    target=target))
             except NotFoundError:
                 msg = 'Instrument "{}" not found'
@@ -118,7 +118,7 @@ class ConfigManager(object):
         processors = []
         for name in self.enabled_processors:
             try:
-                proc = self.plugin_cache.get_plugin(name, kind='output_processor')
+                proc = self.plugin_cache.get_plugin(identifier(name), kind='output_processor')
             except NotFoundError:
                 msg = 'Output Processor "{}" not found'
                 raise NotFoundError(msg.format(name))
