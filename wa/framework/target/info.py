@@ -15,6 +15,7 @@
 # pylint: disable=protected-access
 
 import os
+from past.builtins import basestring
 
 from devlib import AndroidTarget, TargetError
 from devlib.target import KernelConfig, KernelVersion, Cpuinfo
@@ -313,7 +314,7 @@ def cache_target_info(target_info, overwrite=False):
 
 class TargetInfo(Podable):
 
-    _pod_serialization_version = 2
+    _pod_serialization_version = 3
 
     @staticmethod
     def from_pod(pod):
@@ -400,4 +401,15 @@ class TargetInfo(Podable):
     def _pod_upgrade_v2(pod):
         pod['page_size_kb'] = pod.get('page_size_kb')
         pod['_pod_version'] = pod.get('format_version', 0)
+        return pod
+
+    @staticmethod
+    def _pod_upgrade_v3(pod):
+        kernel_config = {}
+        for k, v in pod['kernel_config'].items():
+            if isinstance(k, basestring):
+                kernel_config[k.upper()] = v
+            else:
+                kernel_config[k] = v
+        pod['kernel_config'] = kernel_config
         return pod
