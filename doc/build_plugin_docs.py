@@ -71,7 +71,10 @@ def generate_target_documentation(outdir):
                            'generic_chromeos',
                            'generic_local',
                            'juno_linux',
-                           'juno_android']
+                           'juno_android',
+                           'gem5_android',
+                           'gem5_linux',
+                           ]
 
     intro = '\nThis is a list of commonly used targets and their device '\
     'parameters, to see a complete for a complete reference please use the '\
