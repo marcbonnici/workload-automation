@@ -2,6 +2,18 @@
 What's New in Workload Automation
 =================================
 
+
+*************
+Version 3.1.3
+*************
+
+Fixes/Improvements
+==================
+Other
+-----
+    - Update required version of PyYAML to provide additional safeguards from artibary
+      code execution.
+
 *************
 Version 3.1.2
 *************
