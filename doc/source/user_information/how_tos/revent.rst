@@ -26,14 +26,16 @@ exiting the app.
 Because revents are very device-specific\ [*]_, these files would need to
 be recorded for each device.
 
-The files must be called ``<device name>.(setup|run|extract_results|teardown).revent``
-, where ``<device name>`` is the name of your device (as defined by the ``name``
-attribute of your device's class). WA will look for these files in two
-places: ``<install dir>/wa/workloads/<workload name>/revent_files``
-and ``~/.workload_automation/dependencies/<workload name>``. The first
-location is primarily intended for revent files that come with WA (and if
-you did a system-wide install, you'll need sudo to add files there), so it's
-probably easier to use the second location for the files you record. Also,
+The files must be called ``<device name>.(setup|run|extract_results|teardown).revent``,
+where ``<device name>`` is the name of your device (as defined by the model
+name of your device which can be retrieved with
+``adb shell getprop ro.product.model`` or by the ``name`` attribute of your
+customized device class). WA will look for these files in two places:
+``<installdir>/wa/workloads/<workload name>/revent_files`` and
+``~/.workload_automation/dependencies/<workload name>``. The first location is
+primarily intended for revent files that come with WA (and if you did a
+system-wide install, you'll need sudo to add files there), so it's probably
+easier to use the second location for the files you record. Also,
 if revent files for a workload exist in both locations, the files under
 ``~/.workload_automation/dependencies`` will be used in favour of those
 installed with WA.
