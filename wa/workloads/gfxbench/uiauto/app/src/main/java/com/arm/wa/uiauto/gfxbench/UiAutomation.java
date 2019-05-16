@@ -138,37 +138,67 @@ public class UiAutomation extends BaseUiAutomation {
         UiObject results =
             mDevice.findObject(new UiSelector().resourceId("net.kishonti.gfxbench.gl.v50000.corporate:id/results_testList"));
         int number_of_results = results.getChildCount();
-
+        String result;
         //High Level Tests
         UiObject carchase =
             mDevice.findObject(new UiSelector().resourceId("net.kishonti.gfxbench.gl.v50000.corporate:id/results_testList"))
             .getChild(new UiSelector().index(1))
             .getChild(new UiSelector().resourceId("net.kishonti.gfxbench.gl.v50000.corporate:id/updated_result_item_subresult"));
-        Log.d(TAG, "Car Chase score " + carchase.getText());
+        if (carchase.exists()){
+            result = carchase.getText();
+        }
+        else {
+            result = "N/A";
+        }
+        Log.d(TAG, "Car Chase score " + result);
 
         UiObject carchaseoff =
             mDevice.findObject(new UiSelector().resourceId("net.kishonti.gfxbench.gl.v50000.corporate:id/results_testList"))
             .getChild(new UiSelector().index(2))
             .getChild(new UiSelector().resourceId("net.kishonti.gfxbench.gl.v50000.corporate:id/updated_result_item_subresult"));
-        Log.d(TAG, "Car Chase Offscreen score " + carchaseoff.getText());
+        if (carchaseoff.exists()){
+            result = carchaseoff.getText();
+        }
+        else {
+            result = "N/A";
+        }
+        Log.d(TAG, "Car Chase Offscreen score " + result);
 
         UiObject manhattan =
             mDevice.findObject(new UiSelector().resourceId("net.kishonti.gfxbench.gl.v50000.corporate:id/results_testList"))
             .getChild(new UiSelector().index(3))
             .getChild(new UiSelector().resourceId("net.kishonti.gfxbench.gl.v50000.corporate:id/updated_result_item_subresult"));
-        Log.d(TAG, "Manhattan 3.1 score " + manhattan.getText());
+        if (manhattan.exists()){
+            result = manhattan.getText();
+        }
+        else {
+            result = "N/A";
+        }
+        Log.d(TAG, "Manhattan 3.1 score " + result);
 
         UiObject manhattan1080 =
             mDevice.findObject(new UiSelector().resourceId("net.kishonti.gfxbench.gl.v50000.corporate:id/results_testList"))
             .getChild(new UiSelector().index(4))
             .getChild(new UiSelector().resourceId("net.kishonti.gfxbench.gl.v50000.corporate:id/updated_result_item_subresult"));
-        Log.d(TAG, "1080p Manhattan 3.1 Offscreen score " + manhattan1080.getText());
+        if (manhattan1080.exists()){
+            result = manhattan1080.getText();
+        }
+        else {
+            result = "N/A";
+        }
+        Log.d(TAG, "1080p Manhattan 3.1 Offscreen score " + result);
 
         UiObject manhattan1440 =
             mDevice.findObject(new UiSelector().resourceId("net.kishonti.gfxbench.gl.v50000.corporate:id/results_testList"))
             .getChild(new UiSelector().index(5))
             .getChild(new UiSelector().resourceId("net.kishonti.gfxbench.gl.v50000.corporate:id/updated_result_item_subresult"));
-        Log.d(TAG, "1440p Manhattan 3.1 Offscreen score " + manhattan1440.getText());
+        if (manhattan1440.exists()){
+            result = manhattan1440.getText();
+        }
+        else {
+            result = "N/A";
+        }
+        Log.d(TAG, "1440p Manhattan 3.1 Offscreen score " + result);
 
         //Low Level Tests
         UiObject tess =
@@ -178,7 +208,13 @@ public class UiAutomation extends BaseUiAutomation {
         if (!tess.exists() && list.waitForExists(60)) {
             list.scrollIntoView(tess);
         }
-        Log.d(TAG, "Tessellation score " + tess.getText());
+        if (tess.exists()){
+            result = tess.getText();
+        }
+        else {
+            result = "N/A";
+        }
+        Log.d(TAG, "Tessellation score " + result);
 
         UiObject tessoff =
             mDevice.findObject(new UiSelector().resourceId("net.kishonti.gfxbench.gl.v50000.corporate:id/results_testList"))
@@ -187,7 +223,13 @@ public class UiAutomation extends BaseUiAutomation {
         if (!tessoff.exists() && list.waitForExists(60)) {
             list.scrollIntoView(tessoff);
         }
-        Log.d(TAG, "Tessellation Offscreen score " + tessoff.getText());
+        if (tessoff.exists()){
+            result = tessoff.getText();
+        }
+        else {
+            result = "N/A";
+        }
+        Log.d(TAG, "Tessellation Offscreen score " + result);
     }
 
     public void toggleTest(String testname) throws Exception {
