@@ -289,9 +289,15 @@ class InterruptStatsInstrument(Instrument):
             wfh.write(self.target.execute('cat /proc/interrupts'))
 
     def update_output(self, context):
+        context.add_artifact('interrupts_before', self.before_file, kind='data',
+                             classifiers={'stage': 'before'})
         # If workload execution failed, the after_file may not have been created.
         if os.path.isfile(self.after_file):
             diff_interrupt_files(self.before_file, self.after_file, _f(self.diff_file))
+            context.add_artifact('interrupts_after', self.after_file, kind='data',
+                                 classifiers={'stage': 'after'})
+            context.add_artifact('interrupts_diff', self.diff_file, kind='data',
+                                 classifiers={'stage': 'diff'})
 
 
 class DynamicFrequencyInstrument(SysfsExtractor):
