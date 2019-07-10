@@ -176,6 +176,8 @@ class SysfsExtractor(Instrument):
                 self.device_and_host_paths.remove(paths)  # Path is removed to skip diffing it
         for _, before_dir, after_dir, diff_dir in self.device_and_host_paths:
             diff_sysfs_dirs(before_dir, after_dir, diff_dir)
+            for directory in [before_dir, after_dir, diff_dir]:
+                self._add_artifacts(context, directory)
 
     def teardown(self, context):
         self._one_time_setup_done = []
@@ -196,6 +198,17 @@ class SysfsExtractor(Instrument):
 
     def _local_dir(self, directory):
         return os.path.dirname(as_relative(directory).replace(self.target.path.sep, os.sep))
+
+    def _add_artifacts(self, context, directory):
+        for root, dirs, files in os.walk(directory):
+            for f in files:
+                filepath = os.path.join(root, f)
+                if os.path.isfile(filepath):
+                    name = filepath.split(os.path.sep)[2:]
+                    stage = name[0]
+                    name = os.path.join(*name[1:])
+                    context.add_artifact(name, filepath, kind='data',
+                                         classifiers={'stage': stage})
 
 
 class ExecutionTimeInstrument(Instrument):
