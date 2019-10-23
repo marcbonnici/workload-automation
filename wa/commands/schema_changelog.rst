@@ -17,3 +17,8 @@
 ## 1.3
 - Add missing "system_id" field from TargetInfo.
 - Enable support for uploading Artifact that represent directories.
+## 1.4
+- Adds "modules" field to TargetInfo to list the modules loaded by the target
+  during the run.
+## 1.5
+- Changes the type of the "hostid" in TargetInfo from Int to Bigint
