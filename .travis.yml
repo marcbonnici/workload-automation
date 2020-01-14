@@ -44,3 +44,7 @@ env:
         - TEST="$PROCESS_CMD && $SHOW_CMD && $LIST_CMD && $CREATE_CMD"
 script:
     - echo $TEST && eval $TEST
+
+notifications:
+  slack:
+    secure: MH87Kqy0NZLJlTKhLsPDeBb0kPQ0eXYvfqeiFBuYP/qsyKSwErRX6UyZ47x3KSATi20uTfz2HZPTgjRqMyk6nQh8Sd9CnLEfNPp6xTz55h19XIf9zn7jgFB3DQ+CFWL9HX4AanjY2L0rhdgrj8/XPxzQNUIPwmp2YRw8eGX+naI=
