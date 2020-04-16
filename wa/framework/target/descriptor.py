@@ -14,6 +14,9 @@
 #
 
 import inspect
+import logging
+from copy import copy
+from collections import OrderedDict
 
 from devlib import (LinuxTarget, AndroidTarget, LocalLinuxTarget,
                     ChromeOsTarget, Platform, Juno, TC2, Gem5SimulationPlatform,
@@ -29,6 +32,7 @@ from wa.framework.target.assistant import LinuxAssistant, AndroidAssistant, Chro
 from wa.utils.types import list_of_strings, list_of_ints, regex, identifier, caseless_string
 from wa.utils.misc import isiterable
 
+logger = logging.getLogger('descriptor')
 
 def list_target_descriptions(loader=pluginloader):
     targets = {}
@@ -604,6 +608,8 @@ class DefaultTargetDescriptor(TargetDescriptor):
             assistant = ASSISTANTS[target_name]
             conn_params = CONNECTION_PARAMS[conn]
             for platform_name, platform_tuple in PLATFORMS.items():
+                name = '{}_{}'.format(platform_name, target_name)
+                logger.debug("Processing {}".format(name))
                 platform_target_defaults = platform_tuple[-1]
                 platform_tuple = platform_tuple[0:-1]
                 (platform, plat_conn), platform_params = self._get_item(platform_tuple)
@@ -611,7 +617,6 @@ class DefaultTargetDescriptor(TargetDescriptor):
                     continue
                 # Add target defaults specified in the Platform tuple
                 target_params = self._override_params(target_params, platform_target_defaults)
-                name = '{}_{}'.format(platform_name, target_name)
                 td = TargetDescription(name, self)
                 td.target = target
                 td.platform = platform
@@ -638,6 +643,7 @@ class DefaultTargetDescriptor(TargetDescriptor):
         param_map = {p.name: p for p in params}
         for override in overrides:
             if override.name in param_map:
+                logger.debug('Overriding \n{} \nwith \n{}'.format(param_map[override.name], override))
                 param_map[override.name] = override
         # Return the list of overriden parameters
         return list(param_map.values())
@@ -684,6 +690,7 @@ def _get_target_defaults(target):
             if new_spec > specificity:
                 res = (name, ttup)
                 specificity = new_spec
+    logging.debug('Retrieved Target Defaults: {}'.format(res))
     return res
 
 
@@ -696,7 +703,7 @@ def add_description_for_target(target, description=None, **kwargs):
     if 'platform' not in kwargs:
         kwargs['platform'] = Platform
     if 'platform_params' not in kwargs:
-        for (plat, conn, _), params, _, _ in PLATFORMS.values():
+        for (plat, conn), params, _, _ in PLATFORMS.values():
             if plat == kwargs['platform']:
                 kwargs['platform_params'] = params
                 if conn is not None and kwargs['conn'] is None:
