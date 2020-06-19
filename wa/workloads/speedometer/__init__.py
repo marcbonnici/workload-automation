@@ -14,6 +14,7 @@
 #
 import os
 import re
+from time import sleep
 
 from wa import ApkUiautoWorkload, Parameter
 from wa.framework.exception import ValidationError, WorkloadError
@@ -51,6 +52,19 @@ class Speedometer(ApkUiautoWorkload):
         super(Speedometer, self).__init__(target, **kwargs)
         self.gui.timeout = 1500
         self.gui.uiauto_params['version'] = self.speedometer_version
+
+
+    def run(self, context):
+        super().run(context)
+        self.logger.debug('Waiting...')
+        finished = False
+        tmp_file = self.target.tempfile()
+        while(not finished):  ## TODO: Add timeout.
+            sleep(30)
+            output = self.target.execute('uiautomator dump {0} && cat {0}'.format(tmp_file))
+            if 'result-number' in output:
+                finished = True
+
 
     def update_output(self, context):
         super(Speedometer, self).update_output(context)

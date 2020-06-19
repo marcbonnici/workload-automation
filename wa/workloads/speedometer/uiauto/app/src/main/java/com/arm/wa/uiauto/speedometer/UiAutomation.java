@@ -43,7 +43,7 @@ public class UiAutomation extends BaseUiAutomation {
     @Before
     public void initialize(){
         Bundle params = getParams();
-        speedometerVersion = params.getString("version"); 
+        speedometerVersion = params.getString("version");
         initialize_instrumentation();
     }
 
@@ -60,6 +60,14 @@ public class UiAutomation extends BaseUiAutomation {
     }
 
     @Test
+    public void extractResults() throws Exception {
+        UiObject scores =
+            mDevice.findObject(new UiSelector().resourceId("result-number")
+                .className("android.view.View"));
+        getScores(scores);
+    }
+
+    @Test
     public void teardown() throws Exception{
         clearTabs();
         unsetScreenOrientation();
@@ -69,7 +77,7 @@ public class UiAutomation extends BaseUiAutomation {
         UiObject start =
             mDevice.findObject(new UiSelector().description("Start Test")
                    .className("android.widget.Button"));
-            
+
         UiObject starttext =
             mDevice.findObject(new UiSelector().text("Start Test")
                    .className("android.widget.Button"));
@@ -80,19 +88,26 @@ public class UiAutomation extends BaseUiAutomation {
         } else {
             starttext.click();
         }
-        UiObject scores =
-            mDevice.findObject(new UiSelector().resourceId("result-number")
-                .className("android.view.View"));
-        scores.waitForExists(2100000);
-        getScores(scores);
+        // UiObject scores =
+        //     mDevice.findObject(new UiSelector().resourceId("result-number")
+        //         .className("android.view.View"));
+
+        // while(true){
+        //     Thread.sleep(180 * 1000);
+        //     if (scores.exists()){
+        //         break;
+        //     }
+        // }
+        // scores.waitForExists(2100000);
+        // getScores(scores);
     }
 
     public void openSpeedometer() throws Exception {
         UiObject urlBar =
             mDevice.findObject(new UiSelector().resourceId("com.android.chrome:id/url_bar"));
-         
+
         UiObject searchBox =  mDevice.findObject(new UiSelector().resourceId("com.android.chrome:id/search_box_text"));
-        
+
         if (!urlBar.waitForExists(5000)) {
                 searchBox.click();
         }
@@ -122,13 +137,13 @@ public class UiAutomation extends BaseUiAutomation {
             }
             waitAttempts++;
         }
-        
+
         String textScore = scores.getText();
         String descScore = scores.getContentDescription();
         // Chrome throws loads of errors on some devices clogging up logcat so clear tabs before saving score.
         clearTabs();
         Log.i(TAG, "Speedometer Score " + textScore);
-        Log.i(TAG, "Speedometer Score " + descScore);      
+        Log.i(TAG, "Speedometer Score " + descScore);
     }
 
     public void clearTabs() throws Exception {
