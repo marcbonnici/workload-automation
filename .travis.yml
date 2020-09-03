@@ -19,6 +19,8 @@ dist: focal
 
 python:
     - "3.6"
+    - "3.5"
+    - "3.8"
 
 install:
     - pip install nose
@@ -47,3 +49,14 @@ env:
         - TEST="$PROCESS_CMD && $SHOW_CMD && $LIST_CMD && $CREATE_CMD"
 script:
     - echo $TEST && eval $TEST
+
+matrix:
+    exclude:
+        - python: "3.5"
+          env: TEST=$PYLINT
+        - python: "3.5"
+          env: TEST=$PEP8
+        - python: "3.8"
+          env: TEST=$PYLINT
+        - python: "3.8"
+          env: TEST=$PEP8
