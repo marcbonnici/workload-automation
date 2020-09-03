@@ -22,6 +22,9 @@ python:
     - "3.5"
     - "3.8"
 
+services:
+    - docker
+
 install:
     - pip install nose
     - pip install nose2
@@ -41,12 +44,14 @@ env:
         - SHOW_CMD="wa show dhrystone && wa show generic_android && wa show trace-cmd && wa show csv"
         - LIST_CMD="wa list all"
         - CREATE_CMD="wa create agenda dhrystone generic_android csv trace_cmd && wa create package test && wa create workload test"
+        - BUILD_DOCKERFILE="cd ./extras/ && docker build ."
     matrix:
         - TEST=$PYLINT
         - TEST=$PEP8
         - TEST=$NOSETESTS
         - TEST=$WORKLOAD
         - TEST="$PROCESS_CMD && $SHOW_CMD && $LIST_CMD && $CREATE_CMD"
+        - TEST=$BUILD_DOCKERFILE
 script:
     - echo $TEST && eval $TEST
 
@@ -56,7 +61,11 @@ matrix:
           env: TEST=$PYLINT
         - python: "3.5"
           env: TEST=$PEP8
+        - python: "3.5"
+          env: TEST=$BUILD_DOCKERFILE
         - python: "3.8"
           env: TEST=$PYLINT
         - python: "3.8"
           env: TEST=$PEP8
+        - python: "3.8"
+          env: TEST=$BUILD_DOCKERFILE
