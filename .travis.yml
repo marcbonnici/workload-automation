@@ -15,6 +15,8 @@
 
 language: python
 
+dist: focal
+
 python:
     - "3.6"
 
