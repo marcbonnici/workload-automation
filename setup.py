@@ -80,8 +80,8 @@ params = dict(
     maintainer='ARM Architecture & Technology Device Lab',
     maintainer_email='workload-automation@arm.com',
     setup_requires=[
-        'numpy<=1.16.4; python_version<"3"',
-        'numpy; python_version>="3"',
+        'numpy<=1.18.5; python_version<"3.6"',
+        'numpy; python_version>="3.6"',
     ],
     install_requires=[
         'python-dateutil',  # converting between UTC and local time.
