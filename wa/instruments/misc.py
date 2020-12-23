@@ -238,8 +238,8 @@ class ApkVersion(Instrument):
 
     """
 
-    def __init__(self, device, **kwargs):
-        super(ApkVersion, self).__init__(device, **kwargs)
+    def __init__(self, target, **kwargs):
+        super(ApkVersion, self).__init__(target, **kwargs)
         self.apk_info = None
 
     def setup(self, context):
