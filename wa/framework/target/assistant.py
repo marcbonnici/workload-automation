@@ -21,7 +21,7 @@ import tempfile
 import threading
 import time
 
-from wa.framework.exception import WorkerThreadError
+from wa.framework.exception import ConfigError, WorkerThreadError
 from wa.framework.plugin import Parameter
 from wa.utils.android import LogcatParser
 from wa.utils.misc import touch
@@ -60,6 +60,12 @@ class AndroidAssistant(object):
                   be made to disable SELinux by running ``setenforce 0`` on the target
                   at the beginning of the run.
                   """),
+        Parameter('disable_logcat_collection', kind=bool, default=False,
+                  description="""
+                  By default WA will pull Logcat trace from the target to provide additional
+                  details about a run. If set to ``True`` WA will not attempt to pull logcat trace.
+                  Must be set to ``False`` if ``logcat_poll_period`` is specified.
+                  """),
         Parameter('logcat_poll_period', kind=int,
                   constraint=lambda x: x > 0,
                   description="""
@@ -91,8 +97,10 @@ class AndroidAssistant(object):
                   """),
     ]
 
-    def __init__(self, target, logcat_poll_period=None, disable_selinux=True, stay_on_mode=None):
+    def __init__(self, target, logcat_poll_period=None, disable_selinux=True, stay_on_mode=None,
+                 disable_logcat_collection=False):
         self.target = target
+        self.disable_logcat_collection = disable_logcat_collection
         self.logcat_poll_period = logcat_poll_period
         self.disable_selinux = disable_selinux
         self.stay_on_mode = stay_on_mode
@@ -101,6 +109,10 @@ class AndroidAssistant(object):
         self.logger = logging.getLogger('logcat')
         self._logcat_marker_msg = None
         self._logcat_marker_tag = None
+
+        if self.disable_logcat_collection and self.logcat_poll_period:
+            raise ConfigError('Cannot specify `logcat_poll_period` and `disable_logcat_collection`.')
+
         signal.connect(self._before_workload, signal.BEFORE_WORKLOAD_EXECUTION)
         if self.logcat_poll_period:
             signal.connect(self._after_workload, signal.AFTER_WORKLOAD_EXECUTION)
@@ -129,15 +141,16 @@ class AndroidAssistant(object):
             self.target.set_stay_on_mode(self.orig_stay_on_mode)
 
     def extract_results(self, context):
-        logcat_file = os.path.join(context.output_directory, 'logcat.log')
-        self.dump_logcat(logcat_file)
-        context.add_artifact('logcat', logcat_file, kind='log')
-        self.clear_logcat()
-        if not self._check_logcat_nowrap(logcat_file):
-            self.logger.warning('The main logcat buffer wrapped and lost data;'
-                                ' results that rely on this buffer may be'
-                                ' inaccurate or incomplete.'
-                                )
+        if not self.disable_logcat_collection:
+            logcat_file = os.path.join(context.output_directory, 'logcat.log')
+            self.dump_logcat(logcat_file)
+            context.add_artifact('logcat', logcat_file, kind='log')
+            self.clear_logcat()
+            if not self._check_logcat_nowrap(logcat_file):
+                self.logger.warning('The main logcat buffer wrapped and lost data;'
+                                    ' results that rely on this buffer may be'
+                                    ' inaccurate or incomplete.'
+                                    )
 
     def dump_logcat(self, outfile):
         if self.logcat_poller:
@@ -304,11 +317,13 @@ class ChromeOsAssistant(LinuxAssistant):
 
     parameters = LinuxAssistant.parameters + AndroidAssistant.parameters
 
-    def __init__(self, target, logcat_poll_period=None, disable_selinux=True):
+    def __init__(self, target, logcat_poll_period=None, disable_selinux=True,
+                 disable_logcat_collection=False):
         super(ChromeOsAssistant, self).__init__(target)
         if target.supports_android:
             self.android_assistant = AndroidAssistant(target.android_container,
-                                                      logcat_poll_period, disable_selinux)
+                                                      logcat_poll_period, disable_selinux,
+                                                      disable_logcat_collection)
         else:
             self.android_assistant = None
 
