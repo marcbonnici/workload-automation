@@ -22,6 +22,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
+import android.support.test.uiautomator.UiScrollable;
 
 import com.arm.wa.uiauto.UxPerfUiAutomation.GestureTestParams;
 import com.arm.wa.uiauto.UxPerfUiAutomation.GestureType;
@@ -185,6 +186,14 @@ public class UiAutomation extends BaseUiAutomation implements ApplaunchInterface
         }
     }
 
+    public void closeHintPopUp() throws Exception {
+        UiObject hintPopup =
+               mDevice.findObject(new UiSelector().textContains("Got it"));
+        if (hintPopup.waitForExists(3000)) {
+            hintPopup.click();
+        }
+    }
+
     // Helper to click on the first image
     public void selectFirstImage() throws Exception {
         UiObject photo =
@@ -213,8 +222,7 @@ public class UiAutomation extends BaseUiAutomation implements ApplaunchInterface
         UiObject accept =
             mDevice.findObject(new UiSelector().description("Accept"));
         UiObject done =
-            mDevice.findObject(new UiSelector().resourceId(packageID + "cpe_save_button")
-                                               .textContains("Done"));
+            mDevice.findObject(new UiSelector().textContains("Done"));
 
         // On some edit operations we can either confirm an edit with "Accept", "DONE" or neither.
         if (accept.waitForExists(timeout)) {
@@ -223,8 +231,18 @@ public class UiAutomation extends BaseUiAutomation implements ApplaunchInterface
             done.click();
         }
 
+        UiObject cancel =
+            mDevice.findObject(new UiSelector().textContains("Cancel"));
+        if (cancel.exists()) {
+            cancel.click();
+        }
+
         if (dontsave) {
-            clickUiObject(BY_DESC, "Close editor", "android.widget.ImageView");
+            UiObject closeEditor =
+                mDevice.findObject(new UiSelector().descriptionContains("Close editor"));
+            if (closeEditor.exists()) {
+                closeEditor.click();
+            }
 
             UiObject discard = getUiObjectByText("DISCARD", "android.widget.Button");
             discard.waitForExists(viewTimeout);
@@ -319,6 +337,14 @@ public class UiAutomation extends BaseUiAutomation implements ApplaunchInterface
             enhance.click();
         }
 
+        closeHintPopUp();
+
+        UiObject adjustTab =
+        mDevice.findObject(new UiSelector().textContains("Adjust"));
+        if (adjustTab.waitForExists(timeout)){
+                adjustTab.click();
+            }
+
         // Manage potential different spelling of UI element
         UiObject editCol =
             mDevice.findObject(new UiSelector().textMatches("Colou?r"));
@@ -330,9 +356,24 @@ public class UiAutomation extends BaseUiAutomation implements ApplaunchInterface
                                                    .className("android.widget.ImageView"));
             if (adjustTool.waitForExists(timeout)){
                 adjustTool.click();
-            } else {
-                throw new UiObjectNotFoundException(String.format("Could not find Color/Colour adjustment"));
             }
+            adjustTool =
+                mDevice.findObject(new UiSelector().textContains("Adjust"));
+            if (adjustTool.waitForExists(timeout)){
+                    adjustTool.click();
+                }
+            else {
+                throw new UiObjectNotFoundException(String.format("Could not find the adjustment tool"));
+            }
+        }
+
+        // Check if we have the new layout with Saturation instead of Colour
+        UiScrollable editorList = new UiScrollable(new UiSelector()
+                                        .resourceIdMatches(".*photoeditor_fragments_editor3_adjust_recyclerview"));
+        if (editorList.exists()) {
+            editorList.setAsHorizontalList();
+            editorList.scrollTextIntoView("Saturation");
+            clickUiObject(BY_TEXT, "Saturation", "android.widget.TextView");
         }
 
         UiObject seekBar =
@@ -342,6 +383,10 @@ public class UiAutomation extends BaseUiAutomation implements ApplaunchInterface
             seekBar =
             mDevice.findObject(new UiSelector().resourceIdMatches(".*/cpe_adjustments_section_slider")
                                                .className("android.widget.SeekBar").descriptionMatches("Colou?r"));
+        }
+        if (!(seekBar.exists())){
+            seekBar =
+            mDevice.findObject(new UiSelector().className("android.widget.SeekBar").descriptionContains("Saturation"));
         }
 
         while (it.hasNext()) {
@@ -375,7 +420,12 @@ public class UiAutomation extends BaseUiAutomation implements ApplaunchInterface
         clickCropRotateButton();
 
         UiObject straightenSlider =
-            getUiObjectByResourceId(packageID + "cpe_straighten_slider");
+            mDevice.findObject(new UiSelector().resourceId(packageID + "cpe_straighten_slider"));
+
+        if (!straightenSlider.exists()) {
+            straightenSlider =
+            getUiObjectByResourceId(packageID + "photos_photoeditor_fragments_editor3_crop_slider");
+        }
 
         while (it.hasNext()) {
             Map.Entry<String, Position> pair = it.next();
@@ -398,7 +448,7 @@ public class UiAutomation extends BaseUiAutomation implements ApplaunchInterface
         clickCropRotateButton();
 
         UiObject rotate =
-            getUiObjectByResourceId(packageID + "cpe_rotate_90");
+            mDevice.findObject(new UiSelector().resourceIdMatches(".*rotate_90"));
 
         for (String subTest : subTests) {
             String runName = String.format(testTag + "_" + subTest);
@@ -416,7 +466,13 @@ public class UiAutomation extends BaseUiAutomation implements ApplaunchInterface
         UiObject cropRotatebutton =
             mDevice.findObject(new UiSelector().resourceId(packageID + "editor_tool_item_icon")
                                                .descriptionContains("Crop and rotate photo"));
-        if (cropRotatebutton.exists()) {
+
+        if (!cropRotatebutton.waitForExists(2000)) {
+            cropRotatebutton =
+                mDevice.findObject(new UiSelector().descriptionContains("crop tab"));
+        }
+
+        if (cropRotatebutton.waitForExists(2000)) {
             cropRotatebutton.click();
         } else {
             clickUiObject(BY_ID, packageID + "cpe_crop_tool", "android.widget.ImageView");
