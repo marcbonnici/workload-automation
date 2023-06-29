@@ -247,10 +247,14 @@ def get_target_info(target):
         cpu.architecture = target.cpuinfo.architecture
 
         if target.has('cpufreq'):
-            cpu.cpufreq.available_governors = target.cpufreq.list_governors(i)
-            cpu.cpufreq.available_frequencies = target.cpufreq.list_frequencies(i)
-            cpu.cpufreq.related_cpus = target.cpufreq.get_related_cpus(i)
-            cpu.cpufreq.driver = target.cpufreq.get_driver(i)
+            try:
+                cpu.cpufreq.available_governors = target.cpufreq.list_governors(i)
+                cpu.cpufreq.available_frequencies = target.cpufreq.list_frequencies(i)
+                cpu.cpufreq.related_cpus = target.cpufreq.get_related_cpus(i)
+                cpu.cpufreq.driver = target.cpufreq.get_driver(i)
+            except TargetError:
+                # best effort -- retireve information for online cores
+                pass
 
         if target.has('cpuidle'):
             cpu.cpuidle.driver = target.cpuidle.get_driver()
