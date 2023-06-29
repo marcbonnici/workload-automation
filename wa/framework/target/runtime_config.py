@@ -306,13 +306,17 @@ class CpufreqRuntimeConfig(RuntimeConfig):
 
     @staticmethod
     def set_param(obj, value, core, parameter):
-        '''Method to store passed parameter if it is not already specified for that cpu'''
-        cpus = resolve_unique_domain_cpus(core, obj.target)
-        for cpu in cpus:
-            if parameter in obj.config[cpu]:
-                msg = 'Cannot set "{}" for core "{}"; Parameter for CPU{} has already been set'
-                raise ConfigError(msg.format(parameter, core, cpu))
-            obj.config[cpu][parameter] = value
+        '''Method to store passed parameter if it is not already specified for that cpu frequency domain'''
+        resolved_cpus = resolve_unique_domain_cpus(core, obj.target)
+        for resovled  in resolved_cpus:
+            # Check no other cpus in the same domain have already been set.
+            cpus = obj.target.cpufreq.get_related_cpus(resovled)
+            for cpu in cpus:
+                if cpu in obj.config and parameter in obj.config[cpu]:
+                    msg = 'Cannot set "{}" for core "{}"; Parameter for CPU{} has already been set'
+                    raise ConfigError(msg.format(parameter, core, cpu))
+            # Once validated, store the ID of the first cpu resolved.
+            obj.config[resolved_cpus[0]][parameter] = value
 
     def __init__(self, target):
         self.config = defaultdict(dict)
