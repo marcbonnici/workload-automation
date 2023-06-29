@@ -388,9 +388,13 @@ class CpufreqRuntimeConfig(RuntimeConfig):
 
         # Add core name parameters
         for name in unique(self.target.platform.core_names):
-            cpu = resolve_unique_domain_cpus(name, self.target)[0]
-            freq_val = FreqValue(self.supported_cpu_freqs.get(cpu))
-            avail_govs = self.supported_cpu_governors.get(cpu)
+            cpus = resolve_unique_domain_cpus(name, self.target)
+            if not cpus:
+                msg = 'No cpus online for "{}"; Failed to add parameters!'
+                logger.debug(msg.format(name))
+                continue
+            freq_val = FreqValue(self.supported_cpu_freqs.get(cpus[0]))
+            avail_govs = self.supported_cpu_governors.get(cpus[0])
 
             param_name = '{}_frequency'.format(name)
             self._runtime_params[param_name] = \
@@ -496,9 +500,13 @@ class CpufreqRuntimeConfig(RuntimeConfig):
         # Add big.little cores if present on device.
         if self.target.has('bl'):
             for cluster in ['big', 'little']:
-                cpu = resolve_unique_domain_cpus(cluster, self.target)[0]
-                freq_val = FreqValue(self.supported_cpu_freqs.get(cpu))
-                avail_govs = self.supported_cpu_governors.get(cpu)
+                cpus = resolve_unique_domain_cpus(cluster, self.target)
+                if not cpus:
+                    msg = 'No cpus online for "{}"; Failed to add parameters!'
+                    logger.debug(msg.format(cluster))
+                    continue
+                freq_val = FreqValue(self.supported_cpu_freqs.get(cpus[0]))
+                avail_govs = self.supported_cpu_governors.get(cpus[0])
                 param_name = '{}_frequency'.format(cluster)
 
                 self._runtime_params[param_name] = \
