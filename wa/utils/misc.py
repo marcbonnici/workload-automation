@@ -50,7 +50,7 @@ from distutils.spawn import find_executable  # pylint: disable=no-name-in-module
 from dateutil import tz
 
 # pylint: disable=wrong-import-order
-from devlib.exception import TargetError
+from devlib.exception import TargetError, TargetStableError
 from devlib.utils.misc import (ABI_MAP, check_output, walk_modules,
                                ensure_directory_exists, ensure_file_directory_exists,
                                normalize, convert_new_lines, get_cpu_mask, unique,
@@ -623,7 +623,8 @@ def resolve_cpus(name, target):
 def resolve_unique_domain_cpus(name, target):
     """
     Same as `resolve_cpus` above but only returns only the first cpu
-    in each of the different frequency domains. Requires cpufreq.
+    in each of the different frequency domains that are currently online.
+    Requires cpufreq.
     """
     cpus = resolve_cpus(name, target)
     if not target.has('cpufreq'):
@@ -631,13 +632,16 @@ def resolve_unique_domain_cpus(name, target):
               'Cannot obtain cpu domain information'
         raise TargetError(msg)
 
+    cpus = [cpu for cpu in cpus if cpu in target.list_online_cpus()]
     unique_cpus = []
     domain_cpus = []
     for cpu in cpus:
-        if cpu not in domain_cpus:
-            domain_cpus = target.cpufreq.get_related_cpus(cpu)
-        if domain_cpus[0] not in unique_cpus:
-            unique_cpus.append(domain_cpus[0])
+        domain_cpus = target.cpufreq.get_related_cpus(cpu)
+        for domain_cpu in domain_cpus:
+            if domain_cpu in unique_cpus:
+                break
+        else:
+            unique_cpus.append(cpu)
     return unique_cpus
 
 
