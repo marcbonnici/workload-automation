@@ -31,9 +31,9 @@ class TestRuntimeParameterUtils(unittest.TestCase):
         def mock_core_cpus(core):
             return [i for i, c in enumerate(mock.core_names) if c == core]
         def mock_online_cpus():
-            return [0, 1, 2]
+            return [0, 1, 3]
         def mock_offline_cpus():
-            return [3]
+            return [2]
         def mock_related_cpus(core):
             if core in [0, 1]:
                 return [0, 1]
@@ -57,9 +57,9 @@ class TestRuntimeParameterUtils(unittest.TestCase):
 
         # Check get unique domain cpus
         assert_equal(resolve_unique_domain_cpus('A72', mock), [0])
-        assert_equal(resolve_unique_domain_cpus('A53', mock), [2])
+        assert_equal(resolve_unique_domain_cpus('A53', mock), [3])
         assert_equal(resolve_unique_domain_cpus('big', mock), [0])
-        assert_equal(resolve_unique_domain_cpus('little', mock), [2])
-        assert_equal(resolve_unique_domain_cpus('', mock), [0, 2])
+        assert_equal(resolve_unique_domain_cpus('little', mock), [3])
+        assert_equal(resolve_unique_domain_cpus('', mock), [0, 3])
         assert_equal(resolve_unique_domain_cpus('cpu0', mock), [0])
-        assert_equal(resolve_unique_domain_cpus('cpu3', mock), [2])
+        assert_equal(resolve_unique_domain_cpus('cpu3', mock), [3])
