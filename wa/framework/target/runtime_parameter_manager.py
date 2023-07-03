@@ -29,11 +29,11 @@ class RuntimeParameterManager(object):
 
     runtime_config_cls = [
         # order matters
-        SysfileValuesRuntimeConfig,
         HotplugRuntimeConfig,
         CpufreqRuntimeConfig,
         CpuidleRuntimeConfig,
         AndroidRuntimeConfig,
+        SysfileValuesRuntimeConfig,
     ]
 
     def __init__(self, target):
