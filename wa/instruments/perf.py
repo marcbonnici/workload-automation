@@ -252,18 +252,18 @@ class PerfInstrument(Instrument):
             else:
                 self._process_simpleperf_stat_from_raw(stat_file, context, label)
 
-    @staticmethod
-    def _process_simpleperf_stat_from_csv(stat_file, context, label):
+    def _process_simpleperf_stat_from_csv(self, stat_file, context, label):
         with open(stat_file) as csv_file:
             readCSV = csv.reader(csv_file, delimiter=',')
-            line_num = 0
             for row in readCSV:
                 if 'Performance counter statistics' not in row and 'Total test time' not in row:
                     classifiers = {}
                     if '%' in row:
                         classifiers['scaled from(%)'] = row[len(row) - 2].replace('(', '').replace(')', '').replace('%', '')
-                    context.add_metric('{}_{}'.format(label, row[1]), row[0], 'count', classifiers=classifiers)
-                line_num += 1
+                    try:
+                        context.add_metric('{}_{}'.format(label, row[1]), row[0], 'count', classifiers=classifiers)
+                    except(ValueError, IndexError):
+                        self.logger.debug('Failed to parse: "{}"'.format(row))
 
     @staticmethod
     def _process_simpleperf_stat_from_raw(stat_file, context, label):
