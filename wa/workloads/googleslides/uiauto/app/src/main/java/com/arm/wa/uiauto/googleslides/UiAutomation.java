@@ -18,13 +18,13 @@ package com.arm.wa.uiauto.googleslides;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.support.test.runner.AndroidJUnit4;
-import android.support.test.uiautomator.Configurator;
-import android.support.test.uiautomator.UiObject;
-import android.support.test.uiautomator.UiObject2;
-import android.support.test.uiautomator.UiScrollable;
-import android.support.test.uiautomator.UiSelector;
-import android.support.test.uiautomator.By;
+import androidx.test.runner.AndroidJUnit4;
+import androidx.test.uiautomator.Configurator;
+import androidx.test.uiautomator.UiObject;
+import androidx.test.uiautomator.UiObject2;
+import androidx.test.uiautomator.UiScrollable;
+import androidx.test.uiautomator.UiSelector;
+import androidx.test.uiautomator.By;
 
 import com.arm.wa.uiauto.BaseUiAutomation;
 import com.arm.wa.uiauto.UxPerfUiAutomation;
@@ -291,7 +291,7 @@ public class UiAutomation extends BaseUiAutomation {
         clickUiObject(BY_TEXT, workingDirectoryName);
 
         UiScrollable fileList =
-                new UiScrollable(new UiSelector().className("android.support.v7.widget.RecyclerView"));
+                new UiScrollable(new UiSelector().className("androidx.recyclerview.widget.RecyclerView"));
         // Older versions of android seem to use a differnt layout
         if (!fileList.waitForExists(WAIT_TIMEOUT_1SEC)) {
             fileList =

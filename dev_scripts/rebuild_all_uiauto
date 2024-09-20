@@ -6,7 +6,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BASE_DIR="$SCRIPT_DIR/../wa/framework/uiauto"
+BASE_DIR="$SCRIPT_DIR/../wa/framework/uiauto-androidx"
 WORKLOADS_DIR="$SCRIPT_DIR/../wa/workloads"
 
 pushd $BASE_DIR > /dev/null

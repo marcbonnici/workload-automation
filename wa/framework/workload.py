@@ -512,7 +512,7 @@ class UiAutomatorGUI(object):
 
     stages = ['setup', 'runWorkload', 'extractResults', 'teardown']
 
-    uiauto_runner = 'android.support.test.runner.AndroidJUnitRunner'
+    uiauto_runner = 'androidx.test.runner.AndroidJUnitRunner'
 
     def __init__(self, owner, package=None, klass='UiAutomation', timeout=600):
         self.owner = owner

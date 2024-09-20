@@ -18,11 +18,11 @@ package com.arm.wa.uiauto.geekbench;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.test.runner.AndroidJUnit4;
-import android.support.test.uiautomator.UiObject;
-import android.support.test.uiautomator.UiObjectNotFoundException;
-import android.support.test.uiautomator.UiSelector;
-import android.support.test.uiautomator.UiScrollable;
+import androidx.test.runner.AndroidJUnit4;
+import androidx.test.uiautomator.UiObject;
+import androidx.test.uiautomator.UiObjectNotFoundException;
+import androidx.test.uiautomator.UiSelector;
+import androidx.test.uiautomator.UiScrollable;
 import android.view.KeyEvent;
 
 import com.arm.wa.uiauto.BaseUiAutomation;
